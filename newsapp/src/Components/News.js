@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import NewsItems from './NewsItems'
+import Spinner from './Spinner';
 
 export class News extends Component {
    
@@ -14,13 +15,16 @@ export class News extends Component {
     }
 
    async componentDidMount(){
+        this.setState({loading:true})
         let url=`https://newsapi.org/v2/everything?domains=wsj.com&apiKey=ee613bef369d4945a28b876a578f6b44&pagesize=${this.props.pagesize}`
         let data= await fetch(url);
         let jdata= await data.json();
+        this.setState({loading:false})
         this.setState({articles:jdata.articles,totalResults:jdata.totalResults})
 
     }
        handlePrevClick=async()=>{
+        this.setState({loading:true})
         let url=`https://newsapi.org/v2/everything?domains=wsj.com&apiKey=ee613bef369d4945a28b876a578f6b44&page=${this.state.page-1}&pagesize=${this.props.pagesize}`;
         let data= await fetch(url);
         let jdata= await data.json();
@@ -28,7 +32,7 @@ export class News extends Component {
   
         this.setState({
          page: this.state.page-1,
-
+         loading:false
         })
 
        }
@@ -41,7 +45,7 @@ export class News extends Component {
             }else{
 
             
-       
+                this.setState({loading:true})
                 let url=`https://newsapi.org/v2/everything?domains=wsj.com&apiKey=ee613bef369d4945a28b876a578f6b44&page=${this.state.page+1}&pagesize=${this.props.pagesize}`;
                let data= await fetch(url);
                let jdata= await data.json();
@@ -49,7 +53,7 @@ export class News extends Component {
       
                this.setState({
                page: this.state.page+1,
-
+              loading:false
             })
         }
         }
@@ -59,6 +63,7 @@ export class News extends Component {
     return (
        <div  className="container my-3 mx-4">
           <h2 className="text-center fw-bold bg-warning fst-italic border border-dark"> Top News Of The Day </h2>
+            { this.state.loading && <Spinner/>}
           <div className="row">
               {this.state.articles.map((elements)=>{
                  return <div className="col-md-4" key={elements.url}>
